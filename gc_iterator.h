@@ -28,7 +28,7 @@ class Iter
   public:
     Iter()
     {
-        ptr = end = begin = NULL;
+        ptr = end = begin = nullptr;
         length = 0;
     }
     Iter(T *p, T *first, T *last)

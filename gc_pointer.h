@@ -116,7 +116,10 @@ Pointer<T,size>::Pointer(const Pointer &ob){
 
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
-
+    this->addr = ob->addr;
+    this->isArray = ob->addr;
+    this->arraySize = ob->arraySize;
+    this->first = false;
 }
 
 // Destructor for Pointer.
@@ -125,6 +128,10 @@ Pointer<T, size>::~Pointer(){
     
     // TODO: Implement Pointer destructor
     // Lab: New and Delete Project Lab
+    typename std::list<PtrDetails<T> >::iterator p;
+    p = findPtrInfo(addr);
+    p->refcount--;
+    if(p->refcount == 0)collect();
 }
 
 // Collect garbage. Returns true if at least
@@ -135,16 +142,35 @@ bool Pointer<T, size>::collect(){
     // TODO: Implement collect function
     // LAB: New and Delete Project Lab
     // Note: collect() will be called in the destructor
-    return false;
+    bool memfreed = false;
+    typename std::list<PtrDetails<T> >::iterator p;
+    do{
+        // Scan refContainer looking for unreferenced pointers.
+        for (p = refContainer.begin(); p != refContainer.end(); p++){
+            // TODO: Implement collect()
+            // If in-use, skip.
+            if(p->refcount > 0)continue;
+            // Remove unused entry from refContainer.
+            refContainer.erase(p);
+            // Free memory unless the Pointer is null.
+            if(p != nullptr){
+                if(p->isArray)delete [] p;
+                else delete p;
+            }
+            // Restart the search.
+            memfreed = true;
+            break;
+        }
+    } while (p != refContainer.end());
+    return memfreed;
 }
 
 // Overload assignment of pointer to Pointer.
 template <class T, int size>
-T *Pointer<T, size>::operator=(T *t){
+T *Pointer<T, size>::operator=(T *ob){
 
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
-
 }
 // Overload assignment of Pointer to Pointer.
 template <class T, int size>
@@ -152,7 +178,12 @@ Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
 
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
-
+    Pointer<T, size> newPtr;
+    newPtr->addr = ob->addr;
+    newPtr->isArray = ob->addr;
+    newPtr->arraySize = ob->arraySize;
+    newPtr->first = false;
+    return *newPtr;
 }
 
 // A utility function that displays refContainer.
