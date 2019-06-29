@@ -25,10 +25,9 @@ private:
         otherwise. 
     */
     bool isArray; 
-    // true if pointing to array
     // If this Pointer is pointing to an allocated
     // array, then arraySize contains its size.
-    unsigned arraySize; // size of the array
+    unsigned arraySize;
     static bool first; // true when first Pointer is created
     // Return an iterator to pointer details in refContainer.
     typename std::list<PtrDetails<T> >::iterator findPtrInfo(T *ptr);
@@ -50,19 +49,19 @@ public:
     // one object was freed.
     static bool collect();
     // Overload assignment of pointer to Pointer.
-    T *operator=(T *t);
+    T* operator=(T *t);
     // Overload assignment of Pointer to Pointer.
-    Pointer &operator=(Pointer &rv);
+    Pointer& operator=(Pointer &rv);
     // Return a reference to the object pointed
     // to by this Pointer.
-    T &operator*(){
+    T& operator*(){
         return *addr;
     }
     // Return the address being pointed to.
-    T *operator->() { return addr; }
+    T* operator->() { return addr; }
     // Return a reference to the object at the
     // index specified by i.
-    T &operator[](int i){ return addr[i];}
+    T& operator[](int i){ return addr[i];}
     // Conversion function to T *.
     operator T *() { return addr; }
     // Return an Iter to the start of the allocated memory.
@@ -102,13 +101,19 @@ bool Pointer<T, size>::first = true;
 template<class T,int size>
 Pointer<T,size>::Pointer(T *t){
     // Register shutdown() as an exit function.
-    if (first)
+    if (first){}
         atexit(shutdown);
     first = false;
 
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
-
+    typename std::list<PtrDetails<T> >::iterator it = findPtrInfo(t);
+    if(it != refContainer.end()){
+        it->refcount++;
+    }else{
+        PtrDetails<T> newPtr(t, size);
+        refContainer.push_back(newPtr);
+    }
 }
 // Copy constructor.
 template< class T, int size>
@@ -116,10 +121,17 @@ Pointer<T,size>::Pointer(const Pointer &ob){
 
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
+    typename std::list<PtrDetails<T> >::iterator it = findPtrInfo(addr);
+    if(it != refContainer.end()){
+        it->refcount--;
+        it = findPtrInfo(ob->addr);
+        it->refcount++;
+    }else{
+        throw OutOfRangeExc();
+    }
     this->addr = ob->addr;
     this->isArray = ob->addr;
     this->arraySize = ob->arraySize;
-    this->first = false;
 }
 
 // Destructor for Pointer.
@@ -167,22 +179,33 @@ bool Pointer<T, size>::collect(){
 
 // Overload assignment of pointer to Pointer.
 template <class T, int size>
-T *Pointer<T, size>::operator=(T *ob){
+T* Pointer<T, size>::operator=(T *ob){
 
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
+    typename std::list<PtrDetails<T> >::iterator it = findPtrInfo(addr);
+    if(it != refContainer.end()){
+        it->refcount--;
+        it = findPtrInfo(ob->addr);
+        it->refcount++;
+    }else{
+        throw OutOfRangeExc();
+    }
+    this->addr = addr;
+    this->isArray = it->isArray;
+    this->arraySize = it->arraySize;
+    return ob;
 }
 // Overload assignment of Pointer to Pointer.
 template <class T, int size>
-Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
+Pointer<T, size>& Pointer<T, size>::operator=(Pointer &ob){
 
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
     Pointer<T, size> newPtr;
     newPtr->addr = ob->addr;
-    newPtr->isArray = ob->addr;
+    newPtr->isArray = ob->isArray;
     newPtr->arraySize = ob->arraySize;
-    newPtr->first = false;
     return *newPtr;
 }
 
@@ -210,8 +233,7 @@ void Pointer<T, size>::showlist(){
 }
 // Find a pointer in refContainer.
 template <class T, int size>
-typename std::list<PtrDetails<T> >::iterator
-Pointer<T, size>::findPtrInfo(T *ptr){
+typename std::list<PtrDetails<T> >::iterator Pointer<T, size>::findPtrInfo(T *ptr){
     typename std::list<PtrDetails<T> >::iterator p;
     // Find ptr in refContainer.
     for (p = refContainer.begin(); p != refContainer.end(); p++)

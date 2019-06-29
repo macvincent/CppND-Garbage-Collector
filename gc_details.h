@@ -6,12 +6,7 @@ class PtrDetails{
   public:
     unsigned refcount; // current reference count
     T *memPtr;         // pointer to allocated memory
-    /* isArray is true if memPtr points
-        to an allocated array. It is false
-        otherwise. */
-    bool isArray; // true if pointing to array
-    /* If memPtr is pointing to an allocated
-        array, then arraySize contains its size */
+    bool isArray;      // true if pointing to array
     unsigned arraySize; // size of array
     // Here, mPtr points to the allocated memory.
     // If this is an array, then size specifies
@@ -19,8 +14,9 @@ class PtrDetails{
     PtrDetails(T* newPtr, unsigned size = 0){
         // TODO: Implement PtrDetails
         memPtr = newPtr;
+        refcount = 0;
         if(size > 0){
-            arraySize = size;
+            memPtr = new T [size];
         }
     }
 };
