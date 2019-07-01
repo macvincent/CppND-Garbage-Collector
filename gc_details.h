@@ -6,7 +6,7 @@ class PtrDetails{
   public:
     unsigned refcount; // current reference count
     T *memPtr;         // pointer to allocated memory
-    bool isArray;      // true if pointing to array
+    bool isArray = false;      // true if pointing to array
     unsigned arraySize; // size of array
     // Here, mPtr points to the allocated memory.
     // If this is an array, then size specifies
@@ -15,10 +15,10 @@ class PtrDetails{
         // TODO: Implement PtrDetails
         refcount = 1;
         if(size > 0){
-            memPtr = new T [size];
-        }else{
-            memPtr = newPtr;
+            isArray = true;
+            arraySize = size;
         }
+        memPtr = newPtr;
     }
 };
 // Overloading operator== allows two class objects to be compared.

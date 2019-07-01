@@ -24,11 +24,11 @@ private:
         to an allocated array. It is false
         otherwise. 
     */
-    bool isArray; 
+    bool isArray = false; 
     // true if pointing to array
     // If this Pointer is pointing to an allocated
     // array, then arraySize contains its size.
-    unsigned arraySize; // size of the array
+    unsigned arraySize = 0; // size of the array
     static bool first; // true when first Pointer is created
     // Return an iterator to pointer details in refContainer.
     typename std::list<PtrDetails<T> >::iterator findPtrInfo(T *ptr);
@@ -110,11 +110,14 @@ Pointer<T,size>::Pointer(T *t){
     // Lab: Smart Pointer Project Lab
 		typename std::list<PtrDetails<T> >::iterator p = findPtrInfo(t);
 		if(p == refContainer.end()){
-			PtrDetails<T> newPtr(t);
+			PtrDetails<T> newPtr(t, size);
+            if(size > 0){
+			    isArray = true;
+			    arraySize = size;
+		    }
 			refContainer.push_back(newPtr);
 		}else{
 			p->refcount++;
-			std::cout << p->refcount << std::endl;
 		}
 		this->addr = t;
 }
@@ -126,6 +129,8 @@ Pointer<T,size>::Pointer(const Pointer &ob){
     // Lab: Smart Pointer Project Lab
     typename std::list<PtrDetails<T> >::iterator p = findPtrInfo(ob.addr);
     p->refcount++;
+    this->isArray = ob.isArray;
+    this->arraySize = ob.arraySize;   
 	this->addr = ob.addr;
 }
 
@@ -154,7 +159,10 @@ bool Pointer<T, size>::collect(){
         for(; p != refContainer.end(); p++){
             if(p->refcount > 0)continue;
             if(p->memPtr){
-                delete p->memPtr;
+                if(p->isArray){
+                    delete[] p->memPtr;
+                }
+                else delete p->memPtr;
                 p->memPtr = nullptr;
             }
         }
@@ -172,8 +180,17 @@ T* Pointer<T, size>::operator=(T *t){
     typename std::list<PtrDetails<T> >::iterator p = findPtrInfo(addr);
     p->refcount--;
     if(p->refcount == 0)collect();
-    PtrDetails<T> newPtr(t);
-    refContainer.push_back(newPtr);
+    p = findPtrInfo(t);
+    if(p == refContainer.end()){
+        PtrDetails<T> newPtr(t, size);
+        refContainer.push_back(newPtr);
+    }else{
+        p->refcount++;
+    }
+    if(size > 0){
+        isArray = true;
+        arraySize = size;
+    }
     this->addr = t;
     return addr;
 }
@@ -189,6 +206,8 @@ Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
     p = findPtrInfo(rv.addr);
     p->refcount++;
 	this->addr = rv.addr;
+    this->isArray = rv.isArray;
+    this->arraySize = rv.arraySize;
     return *this;
 }
 
