@@ -13,10 +13,11 @@ class PtrDetails{
     // the size of the array.
     PtrDetails(T* newPtr, unsigned size = 0){
         // TODO: Implement PtrDetails
-        memPtr = newPtr;
-        refcount = 0;
+        refcount = 1;
         if(size > 0){
             memPtr = new T [size];
+        }else{
+            memPtr = newPtr;
         }
     }
 };
@@ -24,7 +25,6 @@ class PtrDetails{
 // This is needed by the STL list class.
 template <class T>
 bool operator==(const PtrDetails<T> &ob1, const PtrDetails<T> &ob2){
-    // TODO: Implement operator==
-    if(ob1->memPtr == ob2->memPtr && ob1->arraySize == ob2->arraySize)return true;
+    if(ob1.memPtr == ob2.memPtr && ob1.arraySize == ob2.arraySize)return true;
     return false;
 }
