@@ -12,7 +12,7 @@ template <class T, int size = 0>
 class Pointer{
 private:
     // refContainer maintains the garbage collection list.
-    static std::list<PtrDetails<T> > refContainer;.
+    static std::list<PtrDetails<T> > refContainer;
     T *addr = nullptr;
     bool isArray = false; 
     unsigned arraySize = 0;
