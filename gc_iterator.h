@@ -1,26 +1,15 @@
-// Exception thrown when an attempt is made to
-// use an Iter that exceeds the range of the
-// underlying object.
-//
+// To be thrown when we have errors
 class OutOfRangeExc
-{
-    // Add functionality if needed by your application.
+{ 
+
 };
-
-
 // An iterator-like class for cycling through arrays
-// that are pointed to by GCPtrs. Iter pointers
-// ** do not ** participate in or affect garbage
-// collection. Thus, an Iter pointing to
-// some object does not prevent that object
-// from being recycled.
-//
 template <class T>
 class Iter{
-    T *ptr;    // current pointer value
-    T *end;    // points to element one past end
-    T *begin;  // points to start of allocated array
-    unsigned length; // length of sequence
+    T *ptr;
+    T *end;
+    T *begin;
+    unsigned length;
   public:
     Iter(){
         ptr = end = begin = nullptr;
@@ -33,17 +22,14 @@ class Iter{
         length = last - first;
     }
     // Return length of sequence to which this
-    // Iter points.
     unsigned size() { return length; }
     // Return value pointed to by ptr.
-    // Do not allow out-of-bounds access.
     T& operator*(){
         if ((ptr >= end) || (ptr < begin))
             throw OutOfRangeExc();
         return *ptr;
     }
     // Return address contained in ptr.
-    // Do not allow out-of-bounds access.
     T *operator->(){
         if ((ptr >= end) || (ptr < begin))
             throw OutOfRangeExc();
@@ -71,9 +57,7 @@ class Iter{
         ptr--;
         return Iter<T>(tmp, begin, end);
     }
-    // Return a reference to the object at the
-    // specified index. Do not allow out-of-bounds
-    // access.
+    // Return a reference to the object at the specified index
     T& operator[](int i){
         if ((i < 0) || (i >= (end - begin)))
             throw OutOfRangeExc();
