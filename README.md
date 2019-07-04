@@ -4,16 +4,8 @@ This is an implementation of a C++ garbage pointer
 ```
 git clone https://github.com/macvincent/CppND-Garbage-Collector
 ```
-
-# CppND-System-Monitor
-
-## To setup and compile in an Ubuntu workspace:
-
-1. Clone repository this repository using the link below
-```
-git clone https://github.com/udacity/CppND-System-Monitor
-```
-2. To test colpime and run main.cpp
+2. To test, compile and run main.cpp
 ```
 g++ -std="c++17" main.cpp && ./a.out
 ```
+3. To use, clone and include the `gc_details.h`, `gc_iterator`, and `gc_pointer.h` header files.

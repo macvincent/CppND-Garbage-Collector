@@ -130,7 +130,7 @@ bool Pointer<T, size>::collect(){
                     delete[] p->memPtr;
                 }
                 else delete p->memPtr;
-                p->memPtr = nullptr;
+                refContainer.erase(p--);
             }
         }
     }while (p != refContainer.end());
