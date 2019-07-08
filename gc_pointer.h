@@ -161,6 +161,7 @@ T* Pointer<T, size>::operator=(T *t){
 // Overload assignment of Pointer to Pointer.
 template <class T, int size>
 Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
+    if(*this == rv)return *this;
     typename std::list<PtrDetails<T> >::iterator p = findPtrInfo(addr);
     p->refcount--;
     if(p->refcount == 0)collect();
